@@ -13,7 +13,6 @@ from uuid import uuid4
 import pymysql.err
 from CustomerInfo.Users import UsersService as UserService
 from Context.Context import Context
-import boto3
 
 # Setup and use the simple, common Python logging framework. Send log messages to the console.
 # The application should get the log level out of the context. We will change later.
@@ -62,11 +61,6 @@ application.add_url_rule('/<username>', 'hello', (lambda username:
 _default_context = None
 _user_service = None
 
-def publish_sns():
-    sns = boto3.client('sns', region_name='us-east-1')
-    response = sns.publish(
-        TopicArn='arn:aws:sns:us-east-1:974283779235:ThinkerKoala', Message='testing testing 123')
-    print(response)
 
 def _get_default_context():
 
@@ -260,7 +254,6 @@ def register_user():
             "data": data
         }
         response = Response(json.dumps(message),status = 200, content_type= "application/json")
-        publish_sns()
         return response
     except pymysql.err.IntegrityError as ie:
         if ie.args[0] == 1062:
@@ -296,7 +289,6 @@ def registrations():
             "data": data
         }
         response = Response(json.dumps(message),status = 200, content_type= "application/json")
-        publish_sns()
         return response
     except pymysql.err.IntegrityError as ie:
         if ie.args[0] == 1062:

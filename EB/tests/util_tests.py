@@ -1,4 +1,19 @@
-import Utils.security as security
+#import EB.Utils.security as security
+
+from EB.CustomerInfo.Users import UsersService as us
+
+c = us()
+
+
+def f():
+    return "Cool"
+
+
+c.somf = f
+
+print(c.somf())
+
+
 
 
 def t1():
@@ -18,4 +33,4 @@ def t2():
 
 
 #t1()
-t2()
+#t2()
