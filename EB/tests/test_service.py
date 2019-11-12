@@ -1,5 +1,5 @@
 
-from CustomerInfo.Users import UsersService as UserService
+from Services.CustomerInfo.Users import UsersService as UserService
 import json
 
 def t1():

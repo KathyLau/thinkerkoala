@@ -11,7 +11,7 @@ from datetime import datetime
 import json
 from uuid import uuid4
 import pymysql.err
-from CustomerInfo.Users import UsersService as UserService
+from Services.CustomerInfo.Users import UsersService as UserService
 from Context.Context import Context
 import boto3
 
@@ -62,10 +62,10 @@ application.add_url_rule('/<username>', 'hello', (lambda username:
 _default_context = None
 _user_service = None
 
-def publish_sns():
+def publish_sns(message):
     sns = boto3.client('sns', region_name='us-east-1')
     response = sns.publish(
-        TopicArn='arn:aws:sns:us-east-1:974283779235:ThinkerKoala', Message='testing testing 123')
+        TopicArn='arn:aws:sns:us-east-1:974283779235:ThinkerKoala', Message=json.dumps(message))
     print(response)
 
 def _get_default_context():
@@ -260,7 +260,7 @@ def register_user():
             "data": data
         }
         response = Response(json.dumps(message),status = 200, content_type= "application/json")
-        publish_sns()
+        publish_sns({"email": email, "id": id})
         return response
     except pymysql.err.IntegrityError as ie:
         if ie.args[0] == 1062:
@@ -296,7 +296,7 @@ def registrations():
             "data": data
         }
         response = Response(json.dumps(message),status = 200, content_type= "application/json")
-        publish_sns()
+        publish_sns({"email": email, "id": id})
         return response
     except pymysql.err.IntegrityError as ie:
         if ie.args[0] == 1062:
