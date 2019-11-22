@@ -186,6 +186,7 @@ def user_email(email):
         if inputs["method"] == "GET":
 
             rsp = user_service.get_by_email(email)
+            rsp_etag = str(hash(frozenset(rsp.items())))
 
             if rsp is not None:
                 rsp_data = rsp
@@ -195,10 +196,12 @@ def user_email(email):
                 rsp_data = None
                 rsp_status = 404
                 rsp_txt = "NOT FOUND"
+                rsp_etag = None
         else:
             if inputs["method"] == "PUT":
                 json_body = inputs["body"]
                 rsp = user_service.update_user(email, json_body)
+                rsp_etag = str(hash(frozenset(rsp.items())))
                 rsp_data = rsp
                 if rsp_data == email:
                     rsp_data = {
@@ -219,9 +222,9 @@ def user_email(email):
                     rsp_txt = "NOT FOUND"
 
         if rsp_data is not None:
-            full_rsp = Response(json.dumps(rsp_data), status=rsp_status, content_type="application/json")
+            full_rsp = Response(json.dumps(rsp_data), status=rsp_status, content_type="application/json", headers={"ETag": rsp_etag})
         else:
-            full_rsp = Response(rsp_txt, status=rsp_status, content_type="text/plain")
+            full_rsp = Response(rsp_txt, status=rsp_status, content_type="text/plain", headers={"ETag": rsp_etag})
 
     except Exception as e:
         log_msg = "/email: Exception = " + str(e)
