@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from Context.Context import Context
 from DataAccess.DataObject import UsersRDB as UsersRDB
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # The base classes would not be IN the project. They would be in a separate included package.
 # They would also do some things.
@@ -34,6 +35,40 @@ class UsersService(BaseService):
             ctx = Context.get_default_context()
 
         self._ctx = ctx
+
+    @classmethod
+    def hash_password(cls, user_info):
+
+        passwd = ''
+
+        for field in UsersService.required_create_fields:
+            val = user_info.get(field, None)
+            if v is None:
+                raise ServiceException(ServiceException.missing_field,
+                                       "Missing field = " + field)
+
+            if field == 'password':
+               passwd = generate_password_hash(val)
+
+        user_info['password'] = passwd
+
+        return user_info
+
+    def check_hash_password(cls, user_info, user_info_db):
+
+        checked = False
+
+        for field in UsersService.required_create_fields:
+            val = user_info.get(field, None)
+            val_db = user_info_db.get(field, None)
+            if val_db is None:
+                raise ServiceException(ServiceException.missing_field,
+                                       "Missing field = " + field)
+
+            if field == 'password':
+               checked = check_password_hash(val_db, user_info['password'])
+
+        return checked
 
     @classmethod
     def get_by_email(cls, email):
