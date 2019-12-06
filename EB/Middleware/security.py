@@ -72,3 +72,4 @@ def authorize(url, method, path_params, token):
             if url != "api/users/*" and (method == "PUT" or method == "DELETE"):
                 return role == "admin"
             return role == "admin" or role == "student"
+
