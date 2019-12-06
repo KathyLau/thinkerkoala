@@ -7,6 +7,7 @@ logger = logging.getLogger()
 
 _default_connection = None
 
+
 def _get_default_connection():
 
     global _default_connection
@@ -39,6 +40,7 @@ def get_connection(c_info=None):
         cursorclass=pymysql.cursors.DictCursor
     )
     return result
+
 
 def get_connection_and_cursor(connect_info=None):
 
